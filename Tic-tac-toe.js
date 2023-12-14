@@ -8,6 +8,7 @@ const field5 = document.querySelector("#field5");
 const field6 = document.querySelector("#field6");
 const field7 = document.querySelector("#field7");
 const field8 = document.querySelector("#field8");
+const reset = document.querySelector(".reset");
 
 const winningLines = [
   [0, 1, 2],
@@ -33,6 +34,7 @@ const fields = [
 ];
 
 let currentXO = "X";
+const isDraw = fields.every((field) => field.position.innerText !== "");
 
 //Winner checking function
 const checkWinner = () => {
@@ -45,7 +47,9 @@ const checkWinner = () => {
     .map((field) => field.no);
 
   const didXWin = winningLines.some(
-    (line) => //[6,7,8] Array of numbers
+    (
+      line //[6,7,8] Array of numbers
+    ) =>
       xFields.includes(line[0]) &&
       xFields.includes(line[1]) &&
       xFields.includes(line[2])
@@ -59,22 +63,28 @@ const checkWinner = () => {
   );
 
   if (didXWin) {
-    winner.innerText = "winner: X";
-  }
-  if (didOWin) {
-    winner.innerText = "Winner: 0";
+    winner.innerHTML = `<p class="x">Awesome! Winner is X!</p>`;
+  } else if (didOWin) {
+    winner.innerHTML = `<p class="o">Awesome! Winner is O!</p>`;
+  } else if (isDraw) {
+    winner.innerText = "draw";
   }
 };
 
 //place X or O
 fields.forEach((field) => {
   field.position.addEventListener("click", (event) => {
-    event.target.innerText = currentXO;
-
-    //change XO when click
-    currentXO = currentXO === "X" ? "O" : "X";
-    checkWinner();
+    if (event.target.innerText === "") {
+      event.target.innerText = currentXO;
+      currentXO = currentXO === "X" ? "O" : "X";
+      checkWinner();
+    }
   });
-
 });
-
+reset.addEventListener("click", (event) => {
+  fields.forEach((field) => {
+    field.position.innerHTML = "";
+  });
+  currentXO = "X";
+  winner.innerText = "No winner just yet...";
+});
